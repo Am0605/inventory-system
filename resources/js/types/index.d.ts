@@ -1,4 +1,4 @@
-import { LucideIcon } from 'lucide-react';
+import { type LucideIcon } from 'lucide-react';
 import type { Config } from 'ziggy-js';
 
 export interface Auth {
@@ -18,7 +18,8 @@ export interface NavGroup {
 export type NavItem = {
     title: string;
     href?: string;
-    icon?: React.ComponentType<{ className?: string }> | LucideIcon;
+    icon?: LucideIcon;
+    isActive?: boolean;
     items?: NavItem[];
 }
 

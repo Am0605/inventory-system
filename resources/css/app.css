@@ -231,6 +231,27 @@
     .status-badge-info {
         @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800;
     }
+    
+    /* Sidebar dropdown styles - simplified */
+    .sidebar-dropdown {
+        @apply overflow-hidden transition-all duration-200 ease-in-out;
+    }
+    
+    .sidebar-dropdown[data-state="open"] {
+        animation: slideDownSimple 150ms ease-out;
+    }
+    
+    .sidebar-dropdown[data-state="closed"] {
+        animation: slideUpSimple 150ms ease-out;
+    }
+    
+    .sidebar-submenu-item {
+        @apply pl-6 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors;
+    }
+    
+    .sidebar-submenu-item.active {
+        @apply text-blue-600 bg-blue-50 font-medium;
+    }
 }
 
 /* Animation utilities */
@@ -278,3 +299,27 @@
         opacity: 1;
     }
 }
+
+/* Simple keyframe animations */
+@keyframes slideDownSimple {
+    from {
+        max-height: 0;
+        opacity: 0;
+    }
+    to {
+        max-height: 200px;
+        opacity: 1;
+    }
+}
+
+@keyframes slideUpSimple {
+    from {
+        max-height: 200px;
+        opacity: 1;
+    }
+    to {
+        max-height: 0;
+        opacity: 0;
+    }
+}
+
