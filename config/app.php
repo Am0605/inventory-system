@@ -137,5 +137,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         // App\Providers\EventServiceProvider::class,
         // App\Providers\RouteServiceProvider::class,
+        App\Providers\MailEventServiceProvider::class,
+        App\Providers\BrevoServiceProvider::class,
     ])->toArray(),
 ];

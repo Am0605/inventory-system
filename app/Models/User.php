@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Notifications\BrevoVerifyEmail;
 use App\Notifications\MailgunVerifyEmail;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -52,6 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function sendEmailVerificationNotification()
     {
-        $this->notify(new MailgunVerifyEmail);
+        $this->notify(new BrevoVerifyEmail);
+        // $this->notify(new MailgunVerifyEmail);
     }
 }

@@ -81,6 +81,18 @@
             color: #6b7280;
             margin-top: 20px;
         }
+        .warning-box {
+            background: #fef3cd; 
+            border: 1px solid #f59e0b; 
+            border-radius: 6px; 
+            padding: 15px; 
+            margin: 20px 0;
+        }
+        .warning-text {
+            margin: 0; 
+            color: #92400e; 
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -110,8 +122,8 @@
                 <a href="{{ $verificationUrl }}" class="button">✅ Verify Email Address</a>
             </div>
             
-            <div style="background: #fef3cd; border: 1px solid #f59e0b; border-radius: 6px; padding: 15px; margin: 20px 0;">
-                <p style="margin: 0; color: #92400e; font-size: 14px;">
+            <div class="warning-box">
+                <p class="warning-text">
                     ⏰ <strong>Important:</strong> This verification link will expire in 60 minutes for security purposes.
                 </p>
             </div>
