@@ -1,5 +1,13 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -8,76 +16,38 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Inventory Routes
     Route::prefix('inventory')->name('inventory.')->group(function () {
-        Route::get('products', function () {
-            return Inertia::render('inventory/products/index');
-        })->name('products.index');
-        
-        Route::get('products/create', function () {
-            return Inertia::render('inventory/products/create');
-        })->name('products.create');
-        
-        Route::get('categories', function () {
-            return Inertia::render('inventory/categories/index');
-        })->name('categories.index');
-        
-        Route::get('low-stock', function () {
-            return Inertia::render('inventory/low-stock');
-        })->name('low-stock');
+        Route::get('products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+        Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('low-stock', [ProductController::class, 'lowStock'])->name('low-stock');
     });
 
     // Orders Routes
     Route::prefix('orders')->name('orders.')->group(function () {
-        Route::get('/', function () {
-            return Inertia::render('orders/index');
-        })->name('index');
-        
-        Route::get('create', function () {
-            return Inertia::render('orders/create');
-        })->name('create');
-        
-        Route::get('purchase', function () {
-            return Inertia::render('orders/purchase');
-        })->name('purchase');
+        Route::get('/', [OrderController::class, 'index'])->name('index');
+        Route::get('create', [OrderController::class, 'create'])->name('create');
+        Route::get('purchase', [OrderController::class, 'purchase'])->name('purchase');
     });
 
     // Suppliers Routes
-    Route::get('suppliers', function () {
-        return Inertia::render('suppliers/index');
-    })->name('suppliers.index');
+    Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
 
     // Customers Routes
-    Route::get('customers', function () {
-        return Inertia::render('customers/index');
-    })->name('customers.index');
+    Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
 
     // Warehouses Routes
-    Route::get('warehouses', function () {
-        return Inertia::render('warehouses/index');
-    })->name('warehouses.index');
+    Route::get('warehouses', [WarehouseController::class, 'index'])->name('warehouses.index');
 
     // Reports Routes
     Route::prefix('reports')->name('reports.')->group(function () {
-        Route::get('sales', function () {
-            return Inertia::render('reports/sales');
-        })->name('sales');
-        
-        Route::get('inventory', function () {
-            return Inertia::render('reports/inventory');
-        })->name('inventory');
-        
-        Route::get('financial', function () {
-            return Inertia::render('reports/financial');
-        })->name('financial');
-        
-        Route::get('stock-movement', function () {
-            return Inertia::render('reports/stock-movement');
-        })->name('stock-movement');
+        Route::get('sales', [ReportController::class, 'sales'])->name('sales');
+        Route::get('inventory', [ReportController::class, 'inventory'])->name('inventory');
+        Route::get('financial', [ReportController::class, 'financial'])->name('financial');
+        Route::get('stock-movement', [ReportController::class, 'stockMovement'])->name('stock-movement');
     });
 });
 
