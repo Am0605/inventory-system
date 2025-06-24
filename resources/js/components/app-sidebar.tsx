@@ -7,7 +7,6 @@ import {
     AlertTriangle,
     LayoutGrid,
     Package,
-    PackageSearch,
     Tags,
     ShoppingCart,
     TrendingUp,
@@ -36,11 +35,6 @@ const mainNavItems: NavItem[] = [
                 title: 'All Products',
                 href: '/inventory/products',
                 icon: Package,
-            },
-            {
-                title: 'Add Product',
-                href: '/inventory/products/create',
-                icon: PackageSearch,
             },
             {
                 title: 'Categories',
