@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/react';
 import { AlertTriangle } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Inventory', href: '/inventory' },
+    { title: 'Inventory', href: '#' },
     { title: 'Low Stock', href: '/inventory/low-stock' },
 ];
 

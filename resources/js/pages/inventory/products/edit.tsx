@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/react';
 import { PackageSearch } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Inventory', href: '/inventory' },
+    { title: 'Inventory', href: '#' },
     { title: 'Products', href: '/inventory/products' },
     { title: 'Edit Product', href: '' },
 ];
