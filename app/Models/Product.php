@@ -16,6 +16,7 @@ class Product extends Model
         'sku',
         'description',
         'category_id',
+        'warehouse_id',
         'price',
         'cost',
         'stock_quantity',
@@ -35,6 +36,11 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 
     public function orderItems(): HasMany

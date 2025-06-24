@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { Package, Plus } from 'lucide-react';
+import { Package, Plus, Edit } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Inventory', href: '/inventory' },
@@ -13,6 +13,7 @@ interface Product {
     name: string;
     sku: string;
     category: { name: string };
+    warehouse: { name: string; code: string };
     price: number;
     stock_quantity: number;
     min_stock_level: number;
@@ -72,6 +73,9 @@ export default function ProductsIndex({ products }: ProductsProps) {
                                         Category
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Warehouse
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Price
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -79,6 +83,9 @@ export default function ProductsIndex({ products }: ProductsProps) {
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Status
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
                                     </th>
                                 </tr>
                             </thead>
@@ -92,7 +99,13 @@ export default function ProductsIndex({ products }: ProductsProps) {
                                             {product.sku}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {product.category.name}
+                                            {product.category?.name || 'N/A'}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div>
+                                                <div className="font-medium">{product.warehouse?.name || 'N/A'}</div>
+                                                <div className="text-xs text-gray-400">{product.warehouse?.code || 'N/A'}</div>
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             RM{Number(product.price).toFixed(2)}
@@ -114,6 +127,15 @@ export default function ProductsIndex({ products }: ProductsProps) {
                                             }`}>
                                                 {product.is_active ? 'Active' : 'Inactive'}
                                             </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <Link
+                                                href={`/inventory/products/${product.id}/edit`}
+                                                className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                                            >
+                                                <Edit className="h-4 w-4 mr-1" />
+                                                Edit
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))}

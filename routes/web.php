@@ -22,7 +22,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('inventory')->name('inventory.')->group(function () {
         Route::get('products', [ProductController::class, 'index'])->name('products.index');
         Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+        Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
         Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
         Route::get('low-stock', [ProductController::class, 'lowStock'])->name('low-stock');
     });
 
@@ -30,6 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('index');
         Route::get('create', [OrderController::class, 'create'])->name('create');
+        Route::get('{order}/edit', [OrderController::class, 'edit'])->name('edit');
         Route::get('purchase', [OrderController::class, 'purchase'])->name('purchase');
     });
 
@@ -38,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Customers Routes
     Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
+    Route::get('customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
 
     // Warehouses Routes
     Route::get('warehouses', [WarehouseController::class, 'index'])->name('warehouses.index');

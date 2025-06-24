@@ -11,10 +11,18 @@ class CustomerController extends Controller
 {
     public function index(): Response
     {
-        $customers = Customer::paginate(10);
+        $customers = Customer::withCount('orders')
+            ->paginate(10);
 
         return Inertia::render('customers/index', [
             'customers' => $customers,
+        ]);
+    }
+
+    public function edit(Customer $customer): Response
+    {
+        return Inertia::render('customers/edit', [
+            'customer' => $customer,
         ]);
     }
 }

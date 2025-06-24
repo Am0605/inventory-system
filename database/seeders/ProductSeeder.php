@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Warehouse;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
@@ -11,6 +12,7 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         $categories = Category::all();
+        $warehouses = Warehouse::all();
 
         $products = [
             [
@@ -48,6 +50,7 @@ class ProductSeeder extends Seeder
         foreach ($products as $index => $product) {
             Product::create(array_merge($product, [
                 'category_id' => $categories->skip($index % $categories->count())->first()->id,
+                'warehouse_id' => $warehouses->skip($index % $warehouses->count())->first()->id,
             ]));
         }
     }

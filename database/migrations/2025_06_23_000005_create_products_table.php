@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('sku')->unique();
             $table->text('description')->nullable();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('warehouse_id')->constrained()->onDelete('cascade');
             $table->decimal('price', 10, 2);
             $table->decimal('cost', 10, 2);
             $table->integer('stock_quantity')->default(0);

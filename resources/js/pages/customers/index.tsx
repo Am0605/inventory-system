@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
-import { Users, Plus, Mail, Phone, Building } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { Users, Plus, Edit } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Customers', href: '/customers' },
@@ -14,6 +14,7 @@ interface Customer {
     phone: string;
     address: string;
     company: string;
+    orders_count: number;
     is_active: boolean;
 }
 
@@ -52,59 +53,84 @@ export default function CustomersIndex({ customers }: CustomersProps) {
                     </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {customers.data.map((customer) => (
-                        <div key={customer.id} className="bg-white rounded-lg shadow-sm border p-6">
-                            <div className="flex items-center mb-4">
-                                <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                    <Users className="h-6 w-6 text-blue-600" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-900">{customer.name}</h3>
-                                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                        customer.is_active 
-                                            ? 'bg-green-100 text-green-800' 
-                                            : 'bg-red-100 text-red-800'
-                                    }`}>
-                                        {customer.is_active ? 'Active' : 'Inactive'}
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div className="space-y-3">
-                                {customer.company && (
-                                    <div className="flex items-center text-sm text-gray-600">
-                                        <Building className="h-4 w-4 mr-2 text-gray-400" />
-                                        <span>{customer.company}</span>
-                                    </div>
-                                )}
-                                <div className="flex items-center text-sm text-gray-600">
-                                    <Mail className="h-4 w-4 mr-2 text-gray-400" />
-                                    <span>{customer.email}</span>
-                                </div>
-                                {customer.phone && (
-                                    <div className="flex items-center text-sm text-gray-600">
-                                        <Phone className="h-4 w-4 mr-2 text-gray-400" />
-                                        <span>{customer.phone}</span>
-                                    </div>
-                                )}
-                                {customer.address && (
-                                    <div className="text-sm text-gray-600">
-                                        <p className="truncate">{customer.address}</p>
-                                    </div>
-                                )}
-                            </div>
-                            
-                            <div className="mt-4 pt-4 border-t flex justify-between">
-                                <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                    View Orders
-                                </button>
-                                <button className="text-gray-600 hover:text-gray-800 text-sm font-medium">
-                                    Edit
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                <div className="bg-white rounded-lg shadow-sm border">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Customer
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Email
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Phone
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Company
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Orders
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {customers.data.map((customer) => (
+                                    <tr key={customer.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div>
+                                                <div className="text-sm font-medium text-gray-900">
+                                                    {customer.name}
+                                                </div>
+                                                {customer.address && (
+                                                    <div className="text-sm text-gray-500 truncate max-w-xs">
+                                                        {customer.address}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {customer.email}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {customer.phone || 'N/A'}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {customer.company || 'N/A'}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            {customer.orders_count}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                                customer.is_active 
+                                                    ? 'bg-green-100 text-green-800' 
+                                                    : 'bg-red-100 text-red-800'
+                                            }`}>
+                                                {customer.is_active ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <Link
+                                                href={`/customers/${customer.id}/edit`}
+                                                className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                                            >
+                                                <Edit className="h-4 w-4 mr-1" />
+                                                Edit
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </AppLayout>

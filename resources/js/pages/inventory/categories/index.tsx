@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
-import { Tags } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { Tags, Plus, Edit } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Inventory', href: '/inventory' },
@@ -17,16 +17,10 @@ interface Category {
     is_active: boolean;
 }
 
-interface PaginationLink {
-    url: string | null;
-    label: string;
-    active: boolean;
-}
-
 interface CategoriesProps {
     categories: {
         data: Category[];
-        links: PaginationLink[];
+        links: { url: string | null; label: string; active: boolean }[];
         current_page: number;
         last_page: number;
     };
@@ -38,12 +32,18 @@ export default function CategoriesIndex({ categories }: CategoriesProps) {
             <Head title="Categories" />
             
             <div className="space-y-6 p-6">
-                <div className="flex items-center">
-                    <Tags className="h-8 w-8 text-blue-600 mr-3" />
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
-                        <p className="text-gray-600">Manage your product categories</p>
+                <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                        <Tags className="h-8 w-8 text-blue-600 mr-3" />
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
+                            <p className="text-gray-600">Manage your product categories</p>
+                        </div>
                     </div>
+                    <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Category
+                    </button>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm border">
@@ -62,6 +62,9 @@ export default function CategoriesIndex({ categories }: CategoriesProps) {
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Status
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
                                     </th>
                                 </tr>
                             </thead>
@@ -85,6 +88,15 @@ export default function CategoriesIndex({ categories }: CategoriesProps) {
                                             }`}>
                                                 {category.is_active ? 'Active' : 'Inactive'}
                                             </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <Link
+                                                href={`/inventory/categories/${category.id}/edit`}
+                                                className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                                            >
+                                                <Edit className="h-4 w-4 mr-1" />
+                                                Edit
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))}
