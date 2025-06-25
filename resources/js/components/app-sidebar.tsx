@@ -70,14 +70,14 @@ const mainNavItems: NavItem[] = [
         ],
     },
     {
-        title: 'Suppliers',
-        href: '/suppliers',
-        icon: Truck,
-    },
-    {
         title: 'Customers',
         href: '/customers',
         icon: Users,
+    },
+    {
+        title: 'Suppliers',
+        href: '/suppliers',
+        icon: Truck,
     },
     {
         title: 'Warehouses',
