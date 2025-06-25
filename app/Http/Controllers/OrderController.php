@@ -50,7 +50,7 @@ class OrderController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
-            'items.*.total' => 'required|numeric|min:0',
+            'items.*.total' => 'required|numeric|min:0', // Keep as 'total' in frontend for consistency
         ]);
 
         DB::transaction(function () use ($validated) {
@@ -78,7 +78,7 @@ class OrderController extends Controller
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
-                    'total' => $item['total'],
+                    'total_price' => $item['total'], // Map 'total' to 'total_price'
                 ]);
             }
         });
@@ -136,7 +136,7 @@ class OrderController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_cost' => 'required|numeric|min:0',
-            'items.*.total' => 'required|numeric|min:0',
+            'items.*.total' => 'required|numeric|min:0', // Keep as 'total' in frontend for consistency
         ]);
 
         DB::transaction(function () use ($validated) {
@@ -164,7 +164,7 @@ class OrderController extends Controller
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'unit_cost' => $item['unit_cost'],
-                    'total' => $item['total'],
+                    'total_price' => $item['total'], // Map 'total' to 'total_price'
                 ]);
             }
         });
@@ -176,6 +176,12 @@ class OrderController extends Controller
     public function edit(Order $order): Response
     {
         $order->load(['customer', 'supplier', 'items.product']);
+        
+        // Map total_price to total for frontend consistency
+        $order->items->transform(function ($item) {
+            $item->total = $item->total_price;
+            return $item;
+        });
         
         if ($order->type === 'sale') {
             $customers = Customer::where('is_active', true)->get();
@@ -214,7 +220,7 @@ class OrderController extends Controller
                 'items.*.product_id' => 'required|exists:products,id',
                 'items.*.quantity' => 'required|integer|min:1',
                 'items.*.unit_price' => 'required|numeric|min:0',
-                'items.*.total' => 'required|numeric|min:0',
+                'items.*.total' => 'required|numeric|min:0', // Keep as 'total' in frontend
             ]);
         } else {
             $validated = $request->validate([
@@ -230,7 +236,7 @@ class OrderController extends Controller
                 'items.*.product_id' => 'required|exists:products,id',
                 'items.*.quantity' => 'required|integer|min:1',
                 'items.*.unit_cost' => 'required|numeric|min:0',
-                'items.*.total' => 'required|numeric|min:0',
+                'items.*.total' => 'required|numeric|min:0', // Keep as 'total' in frontend
             ]);
         }
 
@@ -262,7 +268,7 @@ class OrderController extends Controller
                     'order_id' => $order->id,
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
-                    'total' => $item['total'],
+                    'total_price' => $item['total'], // Map 'total' to 'total_price'
                 ];
 
                 if ($order->type === 'sale') {

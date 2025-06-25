@@ -25,7 +25,7 @@ class OrderSeeder extends Seeder
                 'customer_id' => $customer->id,
                 'status' => 'pending',
                 'subtotal' => 0,
-                'tax' => 0,
+                'tax_amount' => 0,
                 'total' => 0,
                 'order_date' => now()->subDays(rand(1, 30)),
             ]);
@@ -60,7 +60,7 @@ class OrderSeeder extends Seeder
                 'supplier_id' => $supplier->id,
                 'status' => 'pending',
                 'subtotal' => 0,
-                'tax' => 0,
+                'tax_amount' => 0,
                 'total' => 0,
                 'order_date' => now()->subDays(rand(1, 30)),
             ]);

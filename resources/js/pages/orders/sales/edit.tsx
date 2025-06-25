@@ -1,25 +1,34 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, router } from '@inertiajs/react';
-import { ShoppingCart, FileText, Plus, X, Search, Trash2, AlertTriangle } from 'lucide-react';
+import { ShoppingCart, Plus, X, Search, Trash2, AlertTriangle } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Orders', href: '/orders' },
-    { title: 'Edit Order', href: '' },
+    { title: 'Orders', href: '/orders/list' },
+    { title: 'Sales Orders', href: '/orders/sales' },
+    { title: 'Edit Sales Order', href: '' },
 ];
+
+const formatDateForInput = (dateString: string | null): string => {
+    if (!dateString) return '';
+    
+    // If it's already in the correct format (yyyy-MM-dd), return as is
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        return dateString;
+    }
+    
+    // Parse ISO date and format to yyyy-MM-dd
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    
+    return date.toISOString().split('T')[0];
+};
 
 interface Customer {
     id: number;
     name: string;
     email: string;
-}
-
-interface Supplier {
-    id: number;
-    name: string;
-    email: string;
-    company: string;
 }
 
 interface Product {
@@ -44,35 +53,25 @@ interface OrderItem {
 interface Order {
     id: number;
     order_number: string;
-    type: 'sale' | 'purchase';
+    type: 'sale';
     status: string;
     order_date: string;
-    delivery_date: string;
-    notes: string;
+    delivery_date: string | null;
+    notes: string | null;
     subtotal: number;
     tax_amount: number;
     total: number;
-    customer?: Customer;
-    supplier?: Supplier;
+    customer: Customer;
     items: OrderItem[];
 }
 
-interface EditOrderProps {
+interface EditSalesOrderProps {
     order: Order;
     customers: Customer[];
-    suppliers: Supplier[];
     products: Product[];
 }
 
-interface NewOrderItem {
-    product_id: number;
-    product: Product;
-    quantity: number;
-    unit_price: number;
-    total: number;
-}
-
-export default function EditOrder({ order, customers, suppliers, products }: EditOrderProps) {
+export default function EditSalesOrder({ order, customers, products }: EditSalesOrderProps) {
     const [orderItems, setOrderItems] = useState<OrderItem[]>(order.items);
     const [showProductModal, setShowProductModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -80,22 +79,21 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
     const [searchTerm, setSearchTerm] = useState('');
     
     const { data, setData, put, processing, errors } = useForm({
-        customer_id: order.customer?.id?.toString() || '',
-        supplier_id: order.supplier?.id?.toString() || '',
-        order_date: order.order_date,
-        delivery_date: order.delivery_date || '',
+        customer_id: order.customer.id.toString(),
+        order_date: formatDateForInput(order.order_date),
+        delivery_date: formatDateForInput(order.delivery_date), 
         status: order.status,
         notes: order.notes || '',
         subtotal: order.subtotal,
         tax_amount: order.tax_amount,
         total: order.total,
         items: orderItems.map(item => ({
-            id: item.id,
+            id: item.id > 1000000 ? undefined : item.id, // New items have temporary IDs
             product_id: item.product_id,
             quantity: item.quantity,
             unit_price: item.unit_price,
             total: item.total,
-        })),
+        })) as any,
     });
 
     const filteredProducts = products.filter(product =>
@@ -114,8 +112,8 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
                 product_id: product.id,
                 product: product,
                 quantity: 1,
-                unit_price: order.type === 'purchase' ? product.cost : product.price,
-                total: order.type === 'purchase' ? product.cost : product.price,
+                unit_price: product.price,
+                total: product.price,
             };
             
             const updatedItems = [...orderItems, newItem];
@@ -175,8 +173,8 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
         const taxAmount = subtotal * 0.06; // 6% tax
         const total = subtotal + taxAmount;
         
-        setData({
-            ...data,
+        setData(prev => ({
+            ...prev,
             subtotal,
             tax_amount: taxAmount,
             total,
@@ -187,7 +185,7 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
                 unit_price: item.unit_price,
                 total: item.total,
             })),
-        });
+        }));
     };
 
     const submit: FormEventHandler = (e) => {
@@ -217,20 +215,23 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
         });
     };
 
-    const orderTypeTitle = order.type === 'purchase' ? 'Purchase Order' : 'Sales Order';
-    const orderTypeIcon = order.type === 'purchase' ? FileText : ShoppingCart;
-    const OrderIcon = orderTypeIcon;
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-MY', {
+            style: 'currency',
+            currency: 'MYR'
+        }).format(amount);
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Edit ${orderTypeTitle}`} />
+            <Head title="Edit Sales Order" />
             
             <div className="space-y-6 p-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                        <OrderIcon className="h-8 w-8 text-blue-600 mr-3" />
+                        <ShoppingCart className="h-8 w-8 text-blue-600 mr-3" />
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Edit {orderTypeTitle}</h1>
+                            <h1 className="text-2xl font-bold text-gray-900">Edit Sales Order</h1>
                             <p className="text-gray-600">Order #{order.order_number}</p>
                         </div>
                     </div>
@@ -276,6 +277,7 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
                                         <option value="delivered">Delivered</option>
                                         <option value="cancelled">Cancelled</option>
                                     </select>
+                                    {errors.status && <div className="mt-1 text-sm text-red-600">{errors.status}</div>}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -299,48 +301,27 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
                                         onChange={(e) => setData('delivery_date', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                                     />
+                                    {errors.delivery_date && <div className="mt-1 text-sm text-red-600">{errors.delivery_date}</div>}
                                 </div>
                                 
-                                {/* Customer/Supplier Selection */}
-                                {order.type === 'sale' ? (
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Customer <span className="text-red-500">*</span>
-                                        </label>
-                                        <select 
-                                            value={data.customer_id}
-                                            onChange={(e) => setData('customer_id', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                                        >
-                                            <option value="">Select a customer</option>
-                                            {customers.map((customer) => (
-                                                <option key={customer.id} value={customer.id}>
-                                                    {customer.name} ({customer.email})
-                                                </option>
-                                            ))}
-                                        </select>
-                                        {errors.customer_id && <div className="mt-1 text-sm text-red-600">{errors.customer_id}</div>}
-                                    </div>
-                                ) : (
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Supplier <span className="text-red-500">*</span>
-                                        </label>
-                                        <select 
-                                            value={data.supplier_id}
-                                            onChange={(e) => setData('supplier_id', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                                        >
-                                            <option value="">Select a supplier</option>
-                                            {suppliers.map((supplier) => (
-                                                <option key={supplier.id} value={supplier.id}>
-                                                    {supplier.name} - {supplier.company}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        {errors.supplier_id && <div className="mt-1 text-sm text-red-600">{errors.supplier_id}</div>}
-                                    </div>
-                                )}
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Customer <span className="text-red-500">*</span>
+                                    </label>
+                                    <select 
+                                        value={data.customer_id}
+                                        onChange={(e) => setData('customer_id', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                    >
+                                        <option value="">Select a customer</option>
+                                        {customers.map((customer) => (
+                                            <option key={customer.id} value={customer.id}>
+                                                {customer.name} ({customer.email})
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.customer_id && <div className="mt-1 text-sm text-red-600">{errors.customer_id}</div>}
+                                </div>
                             </div>
                         </div>
 
@@ -361,7 +342,7 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
                             {orderItems.length === 0 ? (
                                 <div className="border border-gray-300 rounded-lg p-8 text-center">
                                     <div className="text-gray-500">
-                                        <OrderIcon className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                                        <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                                         <p className="text-lg font-medium mb-2">No items in this order</p>
                                         <p>Click "Add Product" to add items to this order</p>
                                     </div>
@@ -421,7 +402,7 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
                                                         />
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        RM{item.total.toFixed(2)}
+                                                        {formatCurrency(item.total)}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <button
@@ -438,6 +419,7 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
                                     </table>
                                 </div>
                             )}
+                            {errors.items && <div className="mt-2 text-sm text-red-600">{errors.items}</div>}
                         </div>
 
                         {/* Order Summary */}
@@ -451,7 +433,7 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
                                     <input
                                         type="text"
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
-                                        value={`RM${data.subtotal.toFixed(2)}`}
+                                        value={formatCurrency(data.subtotal)}
                                         disabled
                                     />
                                 </div>
@@ -462,7 +444,7 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
                                     <input
                                         type="text"
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
-                                        value={`RM${data.tax_amount.toFixed(2)}`}
+                                        value={formatCurrency(data.tax_amount)}
                                         disabled
                                     />
                                 </div>
@@ -473,7 +455,7 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
                                     <input
                                         type="text"
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 font-bold text-lg"
-                                        value={`RM${data.total.toFixed(2)}`}
+                                        value={formatCurrency(data.total)}
                                         disabled
                                     />
                                 </div>
@@ -559,11 +541,9 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
                                                 </div>
                                                 <div className="text-right">
                                                     <p className="font-medium text-gray-900">
-                                                        RM{(order.type === 'purchase' ? product.cost : product.price).toFixed(2)}
+                                                        {formatCurrency(product.price)}
                                                     </p>
-                                                    <p className="text-sm text-gray-500">
-                                                        {order.type === 'purchase' ? 'Cost' : 'Price'}
-                                                    </p>
+                                                    <p className="text-sm text-gray-500">Price</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -583,19 +563,19 @@ export default function EditOrder({ order, customers, suppliers, products }: Edi
                                     <AlertTriangle className="h-6 w-6 text-red-600" />
                                 </div>
                                 <div className="ml-4">
-                                    <h3 className="text-lg font-medium text-gray-900">Delete Order</h3>
+                                    <h3 className="text-lg font-medium text-gray-900">Delete Sales Order</h3>
                                 </div>
                             </div>
                             
                             <div className="mb-6">
                                 <p className="text-sm text-gray-500 mb-2">
-                                    Are you sure you want to delete this order? This action cannot be undone.
+                                    Are you sure you want to delete this sales order? This action cannot be undone.
                                 </p>
                                 <div className="bg-gray-50 rounded-lg p-3">
                                     <div className="text-sm">
                                         <div className="font-medium text-gray-900">Order #{order.order_number}</div>
-                                        <div className="text-gray-500">Type: {order.type}</div>
-                                        <div className="text-gray-500">Total: RM{order.total.toFixed(2)}</div>
+                                        <div className="text-gray-500">Customer: {order.customer.name}</div>
+                                        <div className="text-gray-500">Total: {formatCurrency(order.total)}</div>
                                     </div>
                                 </div>
                             </div>
