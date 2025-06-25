@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { Package, Plus, Edit } from 'lucide-react';
+import { Package, Plus, Edit, ImageIcon } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Inventory', href: '#' },
@@ -18,6 +18,7 @@ interface Product {
     stock_quantity: number;
     min_stock_level: number;
     is_active: boolean;
+    images: string[] | null;
 }
 
 interface PaginationLink {
@@ -36,6 +37,11 @@ interface ProductsProps {
 }
 
 export default function ProductsIndex({ products }: ProductsProps) {
+    const getImageUrl = (images: string[] | null) => {
+        if (!images || images.length === 0) return null;
+        return `/storage/${images[0]}`;
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Products" />
@@ -51,7 +57,7 @@ export default function ProductsIndex({ products }: ProductsProps) {
                     </div>
                     <Link
                         href="/inventory/products/create"
-                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
                         <Plus className="h-4 w-4 mr-2" />
                         Add Product
@@ -91,9 +97,32 @@ export default function ProductsIndex({ products }: ProductsProps) {
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {products.data.map((product) => (
-                                    <tr key={product.id}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            {product.name}
+                                    <tr key={product.id} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center">
+                                                <div className="h-12 w-12 flex-shrink-0 mr-4">
+                                                    {getImageUrl(product.images) ? (
+                                                        <img
+                                                            className="h-12 w-12 rounded-lg object-cover border border-gray-200"
+                                                            src={getImageUrl(product.images) || ''}
+                                                            alt={product.name}
+                                                            onError={(e) => {
+                                                                const target = e.target as HTMLImageElement;
+                                                                target.style.display = 'none';
+                                                                target.nextElementSibling?.classList.remove('hidden');
+                                                            }}
+                                                        />
+                                                    ) : null}
+                                                    <div className={`h-12 w-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center ${getImageUrl(product.images) ? 'hidden' : ''}`}>
+                                                        <ImageIcon className="h-6 w-6 text-gray-400" />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-medium text-gray-900">
+                                                        {product.name}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {product.sku}
@@ -107,7 +136,7 @@ export default function ProductsIndex({ products }: ProductsProps) {
                                                 <div className="text-xs text-gray-400">{product.warehouse?.code || 'N/A'}</div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
                                             RM{Number(product.price).toFixed(2)}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -131,7 +160,7 @@ export default function ProductsIndex({ products }: ProductsProps) {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <Link
                                                 href={`/inventory/products/${product.id}/edit`}
-                                                className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                                                className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                                             >
                                                 <Edit className="h-4 w-4 mr-1" />
                                                 Edit
