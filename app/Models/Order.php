@@ -18,7 +18,7 @@ class Order extends Model
         'supplier_id',
         'status',
         'subtotal',
-        'tax',
+        'tax_amount',
         'total',
         'order_date',
         'delivery_date',
@@ -27,7 +27,7 @@ class Order extends Model
 
     protected $casts = [
         'subtotal' => 'decimal:2',
-        'tax' => 'decimal:2',
+        'tax_amount' => 'decimal:2', 
         'total' => 'decimal:2',
         'order_date' => 'date',
         'delivery_date' => 'date',
@@ -43,6 +43,12 @@ class Order extends Model
         return $this->belongsTo(Supplier::class);
     }
 
+    public function items(): HasMany // Fixed relationship name
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    // Keep the old name for backward compatibility
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);

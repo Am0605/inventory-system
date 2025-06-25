@@ -20,7 +20,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Inventory Routes
     Route::prefix('inventory')->name('inventory.')->group(function () {
-        // Products
         Route::get('products', [ProductController::class, 'index'])->name('products.index');
         Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('products', [ProductController::class, 'store'])->name('products.store');
@@ -28,7 +27,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
         
-        // Categories
         Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::get('categories/create', [CategoryController::class, 'create'])->name('categories.create');
         Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
@@ -39,6 +37,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('low-stock', [ProductController::class, 'lowStock'])->name('low-stock');
     });
 
+    // Orders Routes
+    Route::prefix('orders')->name('orders.')->group(function () {
+        // Main orders routes
+        Route::get('/list', [OrderController::class, 'index'])->name('index');
+        Route::get('{order}/edit', [OrderController::class, 'edit'])->name('edit');
+        Route::put('{order}', [OrderController::class, 'update'])->name('update');
+        Route::delete('{order}', [OrderController::class, 'destroy'])->name('destroy');
+        
+        // Sales Orders
+        Route::get('sales', [OrderController::class, 'sales'])->name('sales');
+        Route::get('sales/create', [OrderController::class, 'create'])->name('sales.create');
+        Route::post('sales', [OrderController::class, 'store'])->name('sales.store');
+        
+        // Purchase Orders
+        Route::get('purchase', [OrderController::class, 'purchase'])->name('purchase');
+        Route::get('purchase/create', [OrderController::class, 'createPurchase'])->name('purchase.create');
+        Route::post('purchase', [OrderController::class, 'storePurchase'])->name('purchase.store');
+    });
+
     // Customers Routes
     Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
     Route::get('customers/create', [CustomerController::class, 'create'])->name('customers.create');
@@ -46,18 +63,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
     Route::put('customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
     Route::delete('customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
-
-    // Orders Routes
-    Route::prefix('orders')->name('orders.')->group(function () {
-        Route::get('/list', [OrderController::class, 'index'])->name('index');
-        Route::get('create', [OrderController::class, 'create'])->name('create');
-        Route::get('{order}/edit', [OrderController::class, 'edit'])->name('edit');
-        Route::get('purchase', [OrderController::class, 'purchase'])->name('purchase');
-
-        Route::get('/', function () {
-            return redirect()->route('orders.index');
-        });
-    });
 
     // Suppliers Routes
     Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');

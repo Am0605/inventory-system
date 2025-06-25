@@ -58,8 +58,8 @@ const mainNavItems: NavItem[] = [
                 icon: ClipboardList,
             },
             {
-                title: 'Create Order',
-                href: '/orders/create',
+                title: 'Sales Orders',
+                href: '/orders/sales',
                 icon: ShoppingCart,
             },
             {

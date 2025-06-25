@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, Link} from '@inertiajs/react';
 import { FileText, Plus } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -46,10 +46,13 @@ export default function PurchaseOrders({ orders }: PurchaseOrdersProps) {
                             <p className="text-gray-600">Manage orders from your suppliers</p>
                         </div>
                     </div>
-                    <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <Link
+                        href="/orders/create-purchase"
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
                         <Plus className="h-4 w-4 mr-2" />
                         Create Purchase Order
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm border">

@@ -47,13 +47,6 @@ export default function OrdersIndex({ orders }: OrdersProps) {
                             <p className="text-gray-600">Manage all your sales and purchase orders</p>
                         </div>
                     </div>
-                    <Link
-                        href="/orders/create"
-                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Create Order
-                    </Link>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm border">
