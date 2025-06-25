@@ -54,7 +54,7 @@ const mainNavItems: NavItem[] = [
         items: [
             {
                 title: 'All Orders',
-                href: '/orders',
+                href: '/orders/list',
                 icon: ClipboardList,
             },
             {

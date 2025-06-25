@@ -49,10 +49,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Orders Routes
     Route::prefix('orders')->name('orders.')->group(function () {
-        Route::get('/', [OrderController::class, 'index'])->name('index');
+        Route::get('/list', [OrderController::class, 'index'])->name('index');
         Route::get('create', [OrderController::class, 'create'])->name('create');
         Route::get('{order}/edit', [OrderController::class, 'edit'])->name('edit');
         Route::get('purchase', [OrderController::class, 'purchase'])->name('purchase');
+
+        Route::get('/', function () {
+            return redirect()->route('orders.index');
+        });
     });
 
     // Suppliers Routes
