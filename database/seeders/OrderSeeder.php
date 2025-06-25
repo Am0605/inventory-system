@@ -55,7 +55,7 @@ class OrderSeeder extends Seeder
         // Create some purchase orders
         foreach ($suppliers->take(2) as $index => $supplier) {
             $order = Order::create([
-                'order_number' => 'PO' . str_pad($index + 1, 6, '0', STR_PAD_LEFT),
+                'order_number' => 'PO-' . date('Y') . '-' . str_pad(Order::where('type', 'purchase')->count() + 1, 4, '0', STR_PAD_LEFT),
                 'type' => 'purchase',
                 'supplier_id' => $supplier->id,
                 'status' => 'pending',
