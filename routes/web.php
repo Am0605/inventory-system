@@ -39,6 +39,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('low-stock', [ProductController::class, 'lowStock'])->name('low-stock');
     });
 
+    // Customers Routes
+    Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
+    Route::get('customers/create', [CustomerController::class, 'create'])->name('customers.create');
+    Route::post('customers', [CustomerController::class, 'store'])->name('customers.store');
+    Route::get('customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
+    Route::put('customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
+    Route::delete('customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+
     // Orders Routes
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('index');
@@ -49,10 +57,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Suppliers Routes
     Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
-
-    // Customers Routes
-    Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
-    Route::get('customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
 
     // Warehouses Routes
     Route::get('warehouses', [WarehouseController::class, 'index'])->name('warehouses.index');

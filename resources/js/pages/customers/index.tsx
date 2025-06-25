@@ -47,10 +47,13 @@ export default function CustomersIndex({ customers }: CustomersProps) {
                             <p className="text-gray-600">Manage your customer relationships</p>
                         </div>
                     </div>
-                    <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <Link
+                        href="/customers/create"
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
                         <Plus className="h-4 w-4 mr-2" />
                         Add Customer
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm border">
@@ -83,7 +86,7 @@ export default function CustomersIndex({ customers }: CustomersProps) {
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {customers.data.map((customer) => (
-                                    <tr key={customer.id}>
+                                    <tr key={customer.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div>
                                                 <div className="text-sm font-medium text-gray-900">
@@ -106,7 +109,9 @@ export default function CustomersIndex({ customers }: CustomersProps) {
                                             {customer.company || 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {customer.orders_count}
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                {customer.orders_count} orders
+                                            </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -120,7 +125,7 @@ export default function CustomersIndex({ customers }: CustomersProps) {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <Link
                                                 href={`/customers/${customer.id}/edit`}
-                                                className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                                                className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                                             >
                                                 <Edit className="h-4 w-4 mr-1" />
                                                 Edit
