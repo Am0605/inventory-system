@@ -40,10 +40,13 @@ export default function CategoriesIndex({ categories }: CategoriesProps) {
                             <p className="text-gray-600">Manage your product categories</p>
                         </div>
                     </div>
-                    <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <Link
+                        href="/inventory/categories/create"
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
                         <Plus className="h-4 w-4 mr-2" />
                         Add Category
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm border">
@@ -58,6 +61,9 @@ export default function CategoriesIndex({ categories }: CategoriesProps) {
                                         Description
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Slug
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Products Count
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -70,15 +76,20 @@ export default function CategoriesIndex({ categories }: CategoriesProps) {
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {categories.data.map((category) => (
-                                    <tr key={category.id}>
+                                    <tr key={category.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             {category.name}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-500">
-                                            {category.description}
+                                        <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                                            {category.description || '-'}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
+                                            {category.slug}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {category.products_count}
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                {category.products_count} products
+                                            </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -92,7 +103,7 @@ export default function CategoriesIndex({ categories }: CategoriesProps) {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <Link
                                                 href={`/inventory/categories/${category.id}/edit`}
-                                                className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                                                className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                                             >
                                                 <Edit className="h-4 w-4 mr-1" />
                                                 Edit
