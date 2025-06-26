@@ -83,7 +83,7 @@ class OrderController extends Controller
             }
         });
 
-        return redirect()->route('orders.sales')
+        return redirect()->route('orders.sales.index') // ✅ Fixed
             ->with('success', 'Sales order created successfully.');
     }
 
@@ -169,7 +169,7 @@ class OrderController extends Controller
             }
         });
 
-        return redirect()->route('orders.purchase')
+        return redirect()->route('orders.purchase.index') // ✅ Fixed
             ->with('success', 'Purchase order created successfully.');
     }
 
@@ -282,10 +282,10 @@ class OrderController extends Controller
         });
 
         if ($order->type === 'sale') {
-            return redirect()->route('orders.sales')
+            return redirect()->route('orders.sales.index') // ✅ Fixed
                 ->with('success', 'Sales order updated successfully.');
         } else {
-            return redirect()->route('orders.purchase')
+            return redirect()->route('orders.purchase.index') // ✅ Fixed
                 ->with('success', 'Purchase order updated successfully.');
         }
     }
@@ -296,10 +296,10 @@ class OrderController extends Controller
         $order->delete();
 
         if ($order->type === 'sale') {
-            return redirect()->route('orders.sales')
+            return redirect()->route('orders.sales.index') // ✅ Fixed
                 ->with('success', 'Sales order deleted successfully.');
         } else {
-            return redirect()->route('orders.purchase')
+            return redirect()->route('orders.purchase.index') // ✅ Fixed
                 ->with('success', 'Purchase order deleted successfully.');
         }
     }

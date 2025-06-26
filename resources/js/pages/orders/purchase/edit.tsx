@@ -197,7 +197,7 @@ export default function EditPurchaseOrder({ order, suppliers, products }: EditPu
             return;
         }
         
-        put(route('orders.update', order.id));
+        put(route('orders.purchase.update', order.id));
     };
 
     const handleDelete = () => {

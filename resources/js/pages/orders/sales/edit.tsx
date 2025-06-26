@@ -196,7 +196,7 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
             return;
         }
         
-        put(route('orders.update', order.id));
+        put(route('orders.sales.update', order.id));
     };
 
     const handleDelete = () => {

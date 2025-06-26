@@ -38,24 +38,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Orders Routes
-    Route::middleware(['auth', 'verified'])->prefix('orders')->name('orders.')->group(function () {
+    Route::prefix('orders')->name('orders.')->group(function () {
         // All Orders (main index)
-        Route::get('/list', [OrderController::class, 'index'])->name('list'); // This matches '/orders'
+        Route::get('/list', [OrderController::class, 'index'])->name('list');
         
         // Sales Orders
         Route::prefix('sales')->name('sales.')->group(function () {
-            Route::get('/', [OrderController::class, 'sales'])->name('index'); // This matches '/orders/sales'
-            Route::get('/create', [OrderController::class, 'create'])->name('create');
-            Route::post('/', [OrderController::class, 'store'])->name('store');
+            Route::get('/', [OrderController::class, 'sales'])->name('index');
+            Route::get('/create', [OrderController::class, 'create'])->name('create'); // ✅ Fixed
+            Route::post('/', [OrderController::class, 'store'])->name('store'); // ✅ Fixed
             Route::get('/{order}/edit', [OrderController::class, 'edit'])->name('edit');
             Route::put('/{order}', [OrderController::class, 'update'])->name('update');
         });
         
         // Purchase Orders
         Route::prefix('purchase')->name('purchase.')->group(function () {
-            Route::get('/', [OrderController::class, 'purchase'])->name('index'); // This matches '/orders/purchase'
-            Route::get('/create', [OrderController::class, 'create'])->name('create');
-            Route::post('/', [OrderController::class, 'store'])->name('store');
+            Route::get('/', [OrderController::class, 'purchase'])->name('index');
+            Route::get('/create', [OrderController::class, 'createPurchase'])->name('create'); // ✅ Fixed
+            Route::post('/', [OrderController::class, 'storePurchase'])->name('store'); // ✅ Fixed
             Route::get('/{order}/edit', [OrderController::class, 'edit'])->name('edit');
             Route::put('/{order}', [OrderController::class, 'update'])->name('update');
         });
