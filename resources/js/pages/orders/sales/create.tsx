@@ -35,6 +35,14 @@ interface OrderItem {
     total: number;
 }
 
+// Type for form items (what gets sent to the backend)
+interface FormOrderItem {
+    product_id: number;
+    quantity: number;
+    unit_price: number;
+    total: number;
+}
+
 interface CreateSalesOrderProps {
     customers: Customer[];
     products: Product[];
@@ -53,12 +61,7 @@ export default function CreateSalesOrder({ customers, products }: CreateSalesOrd
         subtotal: 0,
         tax_amount: 0,
         total: 0,
-        items: [] as Array<{
-            product_id: number;
-            quantity: number;
-            unit_price: number;
-            total: number;
-        }>,
+        items: [] as FormOrderItem[],
     });
 
     const filteredProducts = products.filter(product =>
@@ -78,7 +81,7 @@ export default function CreateSalesOrder({ customers, products }: CreateSalesOrd
                 product: product,
                 quantity: 1,
                 unit_price: product.price,
-                total: product.price,
+                total: product.price, // Ensure this is a number
             };
             
             const updatedItems = [...orderItems, newItem];
@@ -98,10 +101,11 @@ export default function CreateSalesOrder({ customers, products }: CreateSalesOrd
         
         const updatedItems = orderItems.map(item => {
             if (item.id === itemId) {
+                const newTotal = item.unit_price * quantity;
                 return {
                     ...item,
                     quantity,
-                    total: item.unit_price * quantity,
+                    total: newTotal, // Ensure this calculation is correct
                 };
             }
             return item;
@@ -114,10 +118,11 @@ export default function CreateSalesOrder({ customers, products }: CreateSalesOrd
     const updateUnitPrice = (itemId: number, unitPrice: number) => {
         const updatedItems = orderItems.map(item => {
             if (item.id === itemId) {
+                const newTotal = unitPrice * item.quantity;
                 return {
                     ...item,
                     unit_price: unitPrice,
-                    total: unitPrice * item.quantity,
+                    total: newTotal, // Ensure this calculation is correct
                 };
             }
             return item;
@@ -134,21 +139,27 @@ export default function CreateSalesOrder({ customers, products }: CreateSalesOrd
     };
 
     const updateFormTotals = (items: OrderItem[]) => {
-        const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+        // ✅ Fixed: Add validation to ensure all values are numbers
+        const subtotal = items.reduce((sum, item) => {
+            const itemTotal = Number(item.total) || 0; // Ensure it's a number
+            return sum + itemTotal;
+        }, 0);
+        
         const taxAmount = subtotal * 0.06; // 6% tax
         const total = subtotal + taxAmount;
         
+        // ✅ Fixed: Ensure all calculations are valid numbers
         setData(prev => ({
             ...prev,
-            subtotal,
-            tax_amount: taxAmount,
-            total,
+            subtotal: Number(subtotal) || 0,
+            tax_amount: Number(taxAmount) || 0,
+            total: Number(total) || 0,
             items: items.map(item => ({
                 product_id: item.product_id,
-                quantity: item.quantity,
-                unit_price: item.unit_price,
-                total: item.total,
-            })),
+                quantity: Number(item.quantity) || 0,
+                unit_price: Number(item.unit_price) || 0,
+                total: Number(item.total) || 0,
+            })) as FormOrderItem[],
         }));
     };
 
@@ -164,10 +175,12 @@ export default function CreateSalesOrder({ customers, products }: CreateSalesOrd
     };
 
     const formatCurrency = (amount: number) => {
+        // ✅ Fixed: Add validation for amount parameter
+        const validAmount = Number(amount) || 0;
         return new Intl.NumberFormat('en-MY', {
             style: 'currency',
             currency: 'MYR'
-        }).format(amount);
+        }).format(validAmount);
     };
 
     return (
