@@ -39,6 +39,7 @@ interface FormOrderItem {
     product_id: number;
     quantity: number;
     unit_cost: number;
+    unit_price: number; 
     total: number;
 }
 
@@ -167,6 +168,7 @@ export default function CreatePurchaseOrder({ suppliers, products }: CreatePurch
                 product_id: item.product_id,
                 quantity: Number(item.quantity) || 0,
                 unit_cost: Number(item.unit_cost) || 0,
+                unit_price: Number(item.product.price) || 0, // ✅ Add unit_price from product
                 total: Number(item.total) || 0,
             })) as FormOrderItem[],
         }));

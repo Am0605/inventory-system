@@ -135,6 +135,7 @@ class OrderController extends Controller
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
+            'items.*.unit_price' => 'required|numeric|min:0',
             'items.*.unit_cost' => 'required|numeric|min:0',
             'items.*.total' => 'required|numeric|min:0', // Keep as 'total' in frontend for consistency
         ]);
@@ -163,6 +164,7 @@ class OrderController extends Controller
                     'order_id' => $order->id,
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
                     'unit_cost' => $item['unit_cost'],
                     'total_price' => $item['total'], // Map 'total' to 'total_price'
                 ]);
@@ -235,6 +237,7 @@ class OrderController extends Controller
                 'items' => 'required|array|min:1',
                 'items.*.product_id' => 'required|exists:products,id',
                 'items.*.quantity' => 'required|integer|min:1',
+                'items.*.unit_price' => 'required|numeric|min:0',
                 'items.*.unit_cost' => 'required|numeric|min:0',
                 'items.*.total' => 'required|numeric|min:0', // Keep as 'total' in frontend
             ]);
@@ -274,6 +277,7 @@ class OrderController extends Controller
                 if ($order->type === 'sale') {
                     $itemData['unit_price'] = $item['unit_price'];
                 } else {
+                    $itemData['unit_price'] = $item['unit_price'];
                     $itemData['unit_cost'] = $item['unit_cost'];
                 }
 
