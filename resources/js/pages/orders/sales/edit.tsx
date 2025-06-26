@@ -50,6 +50,29 @@ interface OrderItem {
     total: number;
 }
 
+// ✅ New interface for form items
+interface FormOrderItem {
+    id?: number; // Optional for new items
+    product_id: number;
+    quantity: number;
+    unit_price: number;
+    total: number;
+}
+
+// ✅ New interface for form data
+interface OrderFormData {
+    customer_id: string;
+    order_date: string;
+    delivery_date: string;
+    status: string;
+    notes: string;
+    subtotal: number;
+    tax_amount: number;
+    total: number;
+    items: FormOrderItem[];
+    [key: string]: string | number | FormOrderItem[]; // Index signature to satisfy FormDataType constraint
+}
+
 interface Order {
     id: number;
     order_number: string;
@@ -78,7 +101,8 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     
-    const { data, setData, put, processing, errors } = useForm({
+    // ✅ Fixed: Replace `as any` with proper typing
+    const { data, setData, put, processing, errors } = useForm<OrderFormData>({
         customer_id: order.customer.id.toString(),
         order_date: formatDateForInput(order.order_date),
         delivery_date: formatDateForInput(order.delivery_date), 
@@ -93,7 +117,7 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
             quantity: item.quantity,
             unit_price: item.unit_price,
             total: item.total,
-        })) as any,
+        })), // ✅ Removed `as any` - now properly typed
     });
 
     const filteredProducts = products.filter(product =>
@@ -168,6 +192,7 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
         updateFormTotals(updatedItems);
     };
 
+    // ✅ Fixed: Properly typed function
     const updateFormTotals = (items: OrderItem[]) => {
         const subtotal = items.reduce((sum, item) => sum + item.total, 0);
         const taxAmount = subtotal * 0.06; // 6% tax
@@ -184,7 +209,7 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
                 quantity: item.quantity,
                 unit_price: item.unit_price,
                 total: item.total,
-            })),
+            })) as FormOrderItem[], // ✅ Proper type assertion
         }));
     };
 
