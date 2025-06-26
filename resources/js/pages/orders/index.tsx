@@ -44,6 +44,7 @@ export default function OrdersIndex({ orders }: OrdersProps) {
             currency: 'MYR'
         }).format(amount);
     };
+    //test
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-GB');
