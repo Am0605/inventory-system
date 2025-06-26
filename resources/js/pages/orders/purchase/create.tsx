@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { FileText, Plus, X, Search, AlertCircle, Package } from 'lucide-react';
+import { FileText, Plus, X, Search, Package } from 'lucide-react';
 import { FormEventHandler, useState, useCallback } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
