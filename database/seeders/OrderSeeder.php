@@ -20,7 +20,7 @@ class OrderSeeder extends Seeder
         // Create some sale orders
         foreach ($customers->take(2) as $index => $customer) {
             $order = Order::create([
-                'order_number' => 'ORD' . str_pad($index + 1, 6, '0', STR_PAD_LEFT),
+                'order_number' => 'SO-' . date('Y') . '-' . str_pad(Order::where('type', 'purchase')->count() + 1, 4, '0', STR_PAD_LEFT),
                 'type' => 'sale',
                 'customer_id' => $customer->id,
                 'status' => 'pending',
