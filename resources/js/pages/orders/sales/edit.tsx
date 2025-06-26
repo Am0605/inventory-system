@@ -95,6 +95,7 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
             total: item.total,
         })) as any,
     });
+    console.log('debugging…');
 
     const filteredProducts = products.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
