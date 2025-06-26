@@ -50,16 +50,21 @@ interface OrderItem {
     total: number;
 }
 
-// ✅ New interface for form items
-interface FormOrderItem {
-    id?: number; // Optional for new items
+// ✅ FormDataConvertible interface for proper Inertia support
+interface FormDataConvertible {
+    [key: string]: string | number | boolean | null | undefined | FormDataConvertible | FormDataConvertible[];
+}
+
+// ✅ Make FormOrderItem explicitly FormDataConvertible
+interface FormOrderItem extends FormDataConvertible {
+    id?: number;
     product_id: number;
     quantity: number;
     unit_price: number;
     total: number;
 }
 
-// ✅ New interface for form data
+// ✅ Add index signature back to satisfy Inertia's FormDataType constraint
 interface OrderFormData {
     customer_id: string;
     order_date: string;
@@ -70,7 +75,8 @@ interface OrderFormData {
     tax_amount: number;
     total: number;
     items: FormOrderItem[];
-    [key: string]: string | number | FormOrderItem[]; // Index signature to satisfy FormDataType constraint
+    // ✅ Required index signature for Inertia's FormDataType
+    [key: string]: string | number | FormOrderItem[];
 }
 
 interface Order {
@@ -101,7 +107,7 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
     const [isDeleting, setIsDeleting] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     
-    // ✅ Fixed: Replace `as any` with proper typing
+    // ✅ Now properly satisfies Inertia's FormDataType constraint
     const { data, setData, put, processing, errors } = useForm<OrderFormData>({
         customer_id: order.customer.id.toString(),
         order_date: formatDateForInput(order.order_date),
@@ -112,12 +118,12 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
         tax_amount: order.tax_amount,
         total: order.total,
         items: orderItems.map(item => ({
-            id: item.id > 1000000 ? undefined : item.id, // New items have temporary IDs
+            id: item.id > 1000000 ? undefined : item.id,
             product_id: item.product_id,
             quantity: item.quantity,
             unit_price: item.unit_price,
             total: item.total,
-        })), // ✅ Removed `as any` - now properly typed
+        } as FormOrderItem)),
     });
 
     const filteredProducts = products.filter(product =>
@@ -132,7 +138,7 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
             updateQuantity(existingItem.id, existingItem.quantity + 1);
         } else {
             const newItem: OrderItem = {
-                id: Date.now(), // Temporary ID for new items
+                id: Date.now(),
                 product_id: product.id,
                 product: product,
                 quantity: 1,
@@ -192,24 +198,27 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
         updateFormTotals(updatedItems);
     };
 
-    // ✅ Fixed: Properly typed function
+    // ✅ Clean function with proper FormOrderItem typing
     const updateFormTotals = (items: OrderItem[]) => {
         const subtotal = items.reduce((sum, item) => sum + item.total, 0);
-        const taxAmount = subtotal * 0.06; // 6% tax
+        const taxAmount = subtotal * 0.06;
         const total = subtotal + taxAmount;
+        
+        // ✅ Create properly typed FormOrderItem array
+        const formItems: FormOrderItem[] = items.map(item => ({
+            id: item.id > 1000000 ? undefined : item.id,
+            product_id: item.product_id,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            total: item.total,
+        } as FormOrderItem));
         
         setData(prev => ({
             ...prev,
             subtotal,
             tax_amount: taxAmount,
             total,
-            items: items.map(item => ({
-                id: item.id > 1000000 ? undefined : item.id, // New items have temporary IDs
-                product_id: item.product_id,
-                quantity: item.quantity,
-                unit_price: item.unit_price,
-                total: item.total,
-            })) as FormOrderItem[], // ✅ Proper type assertion
+            items: formItems,
         }));
     };
 
@@ -247,6 +256,10 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
         }).format(amount);
     };
 
+    const getTotalItemsCount = () => {
+        return orderItems.reduce((sum, item) => sum + item.quantity, 0);
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Sales Order" />
@@ -260,14 +273,24 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
                             <p className="text-gray-600">Order #{order.order_number}</p>
                         </div>
                     </div>
-                    <button
-                        type="button"
-                        onClick={() => setShowDeleteModal(true)}
-                        className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                    >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete Order
-                    </button>
+                    <div className="flex items-center space-x-4">
+                        {orderItems.length > 0 && (
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2">
+                                <div className="text-sm text-blue-800">
+                                    <div className="font-medium">{orderItems.length} products, {getTotalItemsCount()} items</div>
+                                    <div>Total: {formatCurrency(data.total)}</div>
+                                </div>
+                            </div>
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => setShowDeleteModal(true)}
+                            className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                        >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete Order
+                        </button>
+                    </div>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm border p-6">
@@ -289,12 +312,13 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Status
+                                        Status <span className="text-red-500">*</span>
                                     </label>
                                     <select 
                                         value={data.status}
                                         onChange={(e) => setData('status', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                        required
                                     >
                                         <option value="pending">Pending</option>
                                         <option value="confirmed">Confirmed</option>
@@ -313,6 +337,7 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
                                         value={data.order_date}
                                         onChange={(e) => setData('order_date', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                        required
                                     />
                                     {errors.order_date && <div className="mt-1 text-sm text-red-600">{errors.order_date}</div>}
                                 </div>
@@ -324,6 +349,7 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
                                         type="date"
                                         value={data.delivery_date}
                                         onChange={(e) => setData('delivery_date', e.target.value)}
+                                        min={data.order_date}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                                     />
                                     {errors.delivery_date && <div className="mt-1 text-sm text-red-600">{errors.delivery_date}</div>}
@@ -337,6 +363,7 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
                                         value={data.customer_id}
                                         onChange={(e) => setData('customer_id', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                        required
                                     >
                                         <option value="">Select a customer</option>
                                         {customers.map((customer) => (
@@ -407,14 +434,18 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
                                                         {item.product.sku}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
-                                                        <input
-                                                            type="number"
-                                                            min="1"
-                                                            value={item.quantity}
-                                                            onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 0)}
-                                                            className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
-                                                        />
-                                                        <span className="ml-2 text-sm text-gray-500">{item.product.unit}</span>
+                                                        <div className="flex items-center space-x-2">
+                                                            <input
+                                                                type="number"
+                                                                min="1"
+                                                                value={item.quantity}
+                                                                onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 0)}
+                                                                className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+                                                            />
+                                                            <span className="text-sm text-gray-500">
+                                                                {item.product.unit}
+                                                            </span>
+                                                        </div>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <input
@@ -426,14 +457,14 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
                                                             className="w-24 px-2 py-1 border border-gray-300 rounded text-sm"
                                                         />
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
                                                         {formatCurrency(item.total)}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <button
                                                             type="button"
                                                             onClick={() => removeItem(item.id)}
-                                                            className="text-red-600 hover:text-red-800"
+                                                            className="text-red-600 hover:text-red-800 transition-colors"
                                                         >
                                                             <X className="h-4 w-4" />
                                                         </button>
@@ -573,6 +604,23 @@ export default function EditSalesOrder({ order, customers, products }: EditSales
                                             </div>
                                         </div>
                                     ))}
+                                    {filteredProducts.length === 0 && (
+                                        <div className="text-center py-8 text-gray-500">
+                                            {searchTerm ? (
+                                                <div>
+                                                    <Search className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                                                    <p className="text-lg font-medium mb-2">No products found</p>
+                                                    <p>No products match "{searchTerm}"</p>
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                                                    <p className="text-lg font-medium mb-2">No products available</p>
+                                                    <p>Please add products to your inventory first</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
