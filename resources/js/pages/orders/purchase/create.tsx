@@ -5,7 +5,7 @@ import { Truck, Plus, Minus, Calendar, DollarSign } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Orders', href: '/orders' },
+    { title: 'Orders', href: '/orders/list' },
     { title: 'Purchase Orders', href: '/orders/purchase' },
     { title: 'Create Purchase Order', href: '/orders/purchase/create' },
 ];

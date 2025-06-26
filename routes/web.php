@@ -38,22 +38,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Orders Routes
-    Route::prefix('orders')->name('orders.')->group(function () {
-        // Main orders routes
-        Route::get('/list', [OrderController::class, 'index'])->name('index');
-        Route::get('{order}/edit', [OrderController::class, 'edit'])->name('edit');
-        Route::put('{order}', [OrderController::class, 'update'])->name('update');
-        Route::delete('{order}', [OrderController::class, 'destroy'])->name('destroy');
+    Route::middleware(['auth', 'verified'])->prefix('orders')->name('orders.')->group(function () {
+        // All Orders (main index)
+        Route::get('/list', [OrderController::class, 'index'])->name('list'); // This matches '/orders'
         
         // Sales Orders
-        Route::get('sales', [OrderController::class, 'sales'])->name('sales');
-        Route::get('sales/create', [OrderController::class, 'create'])->name('sales.create');
-        Route::post('sales', [OrderController::class, 'store'])->name('sales.store');
+        Route::prefix('sales')->name('sales.')->group(function () {
+            Route::get('/', [OrderController::class, 'sales'])->name('index'); // This matches '/orders/sales'
+            Route::get('/create', [OrderController::class, 'create'])->name('create');
+            Route::post('/', [OrderController::class, 'store'])->name('store');
+            Route::get('/{order}/edit', [OrderController::class, 'edit'])->name('edit');
+            Route::put('/{order}', [OrderController::class, 'update'])->name('update');
+        });
         
         // Purchase Orders
-        Route::get('purchase', [OrderController::class, 'purchase'])->name('purchase');
-        Route::get('purchase/create', [OrderController::class, 'createPurchase'])->name('purchase.create');
-        Route::post('purchase', [OrderController::class, 'storePurchase'])->name('purchase.store');
+        Route::prefix('purchase')->name('purchase.')->group(function () {
+            Route::get('/', [OrderController::class, 'purchase'])->name('index'); // This matches '/orders/purchase'
+            Route::get('/create', [OrderController::class, 'create'])->name('create');
+            Route::post('/', [OrderController::class, 'store'])->name('store');
+            Route::get('/{order}/edit', [OrderController::class, 'edit'])->name('edit');
+            Route::put('/{order}', [OrderController::class, 'update'])->name('update');
+        });
+        
+        // Common order actions
+        Route::delete('/{order}', [OrderController::class, 'destroy'])->name('destroy');
     });
 
     // Customers Routes

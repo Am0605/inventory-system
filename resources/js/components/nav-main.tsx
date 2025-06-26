@@ -21,8 +21,24 @@ interface NavMainProps {
 export function NavMain({ items }: NavMainProps) {
     const { url } = usePage();
     
+    // ✅ Fixed: Handle query parameters for pagination
     const isActiveItem = (href: string) => {
-        return url === href || url.startsWith(href + '/');
+        // Remove query parameters from current URL for comparison
+        const currentPath = url.split('?')[0];
+        const linkPath = href.split('?')[0];
+        
+        // Exact match
+        if (currentPath === linkPath) {
+            return true;
+        }
+        
+        // Check if current path starts with link path (for nested routes)
+        // But avoid matching '/' with everything
+        if (linkPath !== '/' && currentPath.startsWith(linkPath + '/')) {
+            return true;
+        }
+        
+        return false;
     };
     
     const hasActiveChild = (item: NavItem) => {
