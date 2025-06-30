@@ -9,6 +9,8 @@ import {
     AlertTriangle,
     TrendingUp 
 } from 'lucide-react';
+import { toast } from 'sonner'; // ✅ Add this import
+import { useEffect } from 'react'; // ✅ Add this import
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
@@ -40,6 +42,30 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ stats, recent_orders }: DashboardProps) {
+    // ✅ Show toast notification when component mounts
+    useEffect(() => {
+        // Check if email verification is disabled (you can pass this from backend)
+        const emailVerificationDisabled = true; // This could come from props or env
+        
+        if (emailVerificationDisabled) {
+            toast.info('Email verification is currently disabled for testing purposes', {
+                description: 'Users can register and login without email verification',
+                duration: 6000,
+                action: {
+                    label: 'Got it',
+                    onClick: () => toast.dismiss(),
+                },
+            });
+        }
+    }, []);
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-MY', {
+            style: 'currency',
+            currency: 'MYR'
+        }).format(amount);
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -143,40 +169,58 @@ export default function Dashboard({ stats, recent_orders }: DashboardProps) {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                                {recent_orders.map((order) => (
-                                    <tr key={order.id}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            {order.order_number}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                order.type === 'sale' 
-                                                    ? 'bg-green-100 text-green-800' 
-                                                    : 'bg-blue-100 text-blue-800'
-                                            }`}>
-                                                {order.type}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {order.customer?.name || order.supplier?.name || 'N/A'}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                order.status === 'pending' 
-                                                    ? 'bg-yellow-100 text-yellow-800' 
-                                                    : 'bg-green-100 text-green-800'
-                                            }`}>
-                                                {order.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            RM{Number(order.total).toFixed(2)}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {new Date(order.order_date).toLocaleDateString()}
+                                {recent_orders.length > 0 ? (
+                                    recent_orders.map((order) => (
+                                        <tr key={order.id} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                {order.order_number}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                                    order.type === 'sale' 
+                                                        ? 'bg-green-100 text-green-800' 
+                                                        : 'bg-blue-100 text-blue-800'
+                                                }`}>
+                                                    {order.type === 'sale' ? 'Sales' : 'Purchase'}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {order.customer?.name || order.supplier?.name || 'N/A'}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                                    order.status === 'pending' 
+                                                        ? 'bg-yellow-100 text-yellow-800' 
+                                                        : order.status === 'confirmed'
+                                                        ? 'bg-blue-100 text-blue-800'
+                                                        : order.status === 'shipped'
+                                                        ? 'bg-purple-100 text-purple-800'
+                                                        : order.status === 'delivered'
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : 'bg-red-100 text-red-800'
+                                                }`}>
+                                                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                                {formatCurrency(order.total)}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {new Date(order.order_date).toLocaleDateString('en-MY')}
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={6} className="px-6 py-12 text-center">
+                                            <div className="text-gray-500">
+                                                <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                                                <h3 className="text-lg font-medium mb-2">No recent orders</h3>
+                                                <p>Orders will appear here once you start creating them.</p>
+                                            </div>
                                         </td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
                     </div>

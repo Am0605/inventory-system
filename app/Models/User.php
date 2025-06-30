@@ -9,7 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use App\Notifications\BrevoVerifyEmail;
 use App\Notifications\MailgunVerifyEmail;
 
-class User extends Authenticatable implements MustVerifyEmail
+//implements MustVerifyEmail
+class User extends Authenticatable 
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
