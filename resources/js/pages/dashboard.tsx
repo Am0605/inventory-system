@@ -48,12 +48,14 @@ export default function Dashboard({ stats, recent_orders }: DashboardProps) {
         
         if (emailVerificationDisabled) {
             toast.info('Email verification is currently disabled for testing purposes', {
-                description: 'Users can register and login without email verification',
-                duration: 6000,
-                action: {
-                    label: 'Got it',
-                    onClick: () => toast.dismiss(),
-                },
+            description: 'Users can register and login without email verification',
+            duration: 6000,
+            // icon: <AlertTriangle className="h-4 w-4" />,
+            className: 'border-orange-200 bg-orange-50 text-orange-900',
+            action: {
+                label: 'Got it',
+                onClick: () => toast.dismiss(),
+            },
             });
         }
     }, []);
