@@ -42,15 +42,27 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ stats, recent_orders }: DashboardProps) {
-    // ✅ Show toast notification when component mounts
+
     useEffect(() => {
-        // Check if email verification is disabled (you can pass this from backend)
-        const emailVerificationDisabled = true; // This could come from props or env
+        const emailVerificationDisabled = true; 
         
         if (emailVerificationDisabled) {
-            toast.info('Email verification is currently disabled for testing purposes', {
-                description: 'Users can register and login without email verification',
-                duration: 6000,
+            toast('⚠️ Testing Mode Active', {
+                description: (
+                    <div className="space-y-2">
+                        <p><strong>Email verification is disabled</strong></p>
+                        <p className="text-sm text-gray-600">
+                            • Users can register without verification<br/>
+                            • This is for JMeter testing<br/>
+                        </p>
+                    </div>
+                ),
+                duration: 8000,
+                style: {
+                    background: '#fef3c7',
+                    border: '1px solid #f59e0b',
+                    color: '#92400e',
+                },
                 action: {
                     label: 'Got it',
                     onClick: () => toast.dismiss(),
