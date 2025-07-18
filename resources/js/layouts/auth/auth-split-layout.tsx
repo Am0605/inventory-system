@@ -31,11 +31,12 @@ export default function AuthSplitLayout({ children, title, description }: PropsW
                                 href="https://am-dev.live" 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="underline hover:text-primary font-medium"
+                                className="underline hover:text-primary font-medium "
                             >
                                 am-dev.live
                             </a>
                         </p>
+                        <p className="text-xs mt-4">© {new Date().getFullYear()} All rights reserved.</p>
                     </footer>
                 </div>
             </div>
