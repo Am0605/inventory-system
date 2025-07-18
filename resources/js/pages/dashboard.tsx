@@ -9,8 +9,10 @@ import {
     AlertTriangle,
     TrendingUp 
 } from 'lucide-react';
-import { toast } from 'sonner'; // ✅ Add this import
-import { useEffect } from 'react'; // ✅ Add this import
+
+// untuk toast notifications (commented out since testing is complete)
+// import { useEffect } from 'react';
+// import { toast } from 'sonner'; 
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
@@ -43,22 +45,21 @@ interface DashboardProps {
 
 export default function Dashboard({ stats, recent_orders }: DashboardProps) {
 
-    useEffect(() => {
-        const emailVerificationDisabled = true; 
+    // useEffect(() => {
+    //     const emailVerificationDisabled = true; 
         
-        if (emailVerificationDisabled) {
-            toast.info('Email verification is currently disabled for testing purposes', {
-            description: 'Users can register and login without email verification',
-            duration: 6000,
-            // icon: <AlertTriangle className="h-4 w-4" />,
-            className: 'border-orange-200 bg-orange-50 text-orange-900',
-            action: {
-                label: 'Got it',
-                onClick: () => toast.dismiss(),
-            },
-            });
-        }
-    }, []);
+    //     if (emailVerificationDisabled) {
+    //         toast.info('Email verification is currently disabled for testing purposes', {
+    //         description: 'Users can register and login without email verification',
+    //         duration: 6000,
+    //         className: 'border-orange-200 bg-orange-50 text-orange-900',
+    //         action: {
+    //             label: 'Got it',
+    //             onClick: () => toast.dismiss(),
+    //         },
+    //         });
+    //     }
+    // }, []);
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-MY', {
