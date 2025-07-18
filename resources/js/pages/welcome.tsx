@@ -85,9 +85,9 @@ export default function Welcome() {
                                     Watch Demo
                                 </button>
                             </div>
-                            {/* <p className="text-sm text-gray-500 mt-4 dark:text-gray-400">
+                            <p className="text-sm text-gray-500 mt-4 dark:text-gray-400">
                                 ✨ No credit card required • 14-day free trial • Cancel anytime
-                            </p> */}
+                            </p>
                         </div>
                     </div>
                 </section>
